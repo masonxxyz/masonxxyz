@@ -114,17 +114,24 @@ function shell(width, height, title, body) {
 
 function pendingMark(x, y) {
   if (!effects.pendingMark) return '';
-  const cells = [[0,0],[5,0],[0,5],[5,5]];
-  const still = cells.map(([dx, dy], index) => `<rect x="${x + dx}" y="${y + dy}" width="3" height="3" fill="${c.accent}" opacity="${index ? .28 : 1}"/>`).join('');
+  // Three bottom-aligned bars that rise and fall out of phase, like a simmering equalizer.
+  const bars = [0, 1, 2];
+  const base = y + 10;
+  const still = bars.map((i) => `<rect x="${x + i * 4}" y="${base - [4, 8, 6][i]}" width="2" height="${[4, 8, 6][i]}" fill="${c.accent}"/>`).join('');
   if (!motion.enabled) return still;
-  const animated = cells.map(([dx, dy], index) => `<rect x="${x + dx}" y="${y + dy}" width="3" height="3" fill="${c.accent}" opacity="${index ? .28 : 1}"><animate attributeName="opacity" values="${cells.map((_, step) => step === index ? 1 : .28).join(';')};${index === 0 ? 1 : .28}" dur="${seconds(motion.pendingDuration)}" calcMode="discrete" repeatCount="indefinite"/></rect>`).join('');
+  const heights = [[3, 10, 5, 8, 3], [8, 4, 10, 3, 8], [5, 9, 3, 10, 5]];
+  const animated = bars.map((i) => {
+    const hs = heights[i];
+    const dur = seconds(motion.pendingDuration * 1.5);
+    return `<rect x="${x + i * 4}" y="${base - hs[0]}" width="2" height="${hs[0]}" fill="${c.accent}"><animate attributeName="height" values="${hs.join(';')}" dur="${dur}" repeatCount="indefinite"/><animate attributeName="y" values="${hs.map((h) => base - h).join(';')}" dur="${dur}" repeatCount="indefinite"/></rect>`;
+  }).join('');
   return `<g class="motion">${animated}</g><g class="reduced" style="display:none">${still}</g>`;
 }
 
 function panelHead(width, name, meta = '', status = '') {
   const safeName = clamp(name, Math.max(12, Math.floor(width / 16)));
   const statusX = safeName ? Math.min(width - 180, 28 + safeName.length * 8) : 12;
-  const statusMarkup = status ? `${pendingMark(statusX, 14)}<text x="${statusX + 16}" y="24" class="label t1">${esc(status)}</text>` : '';
+  const statusMarkup = status ? `${pendingMark(statusX, 14)}<text x="${statusX + 18}" y="24" class="label t1">${esc(status)}</text>` : '';
   return `<rect width="${width}" height="38" fill="${c.panel}"/><line x1="0" x2="${width}" y1="37.5" y2="37.5" stroke="${c.line}"/><text x="12" y="24" class="code t1">${esc(safeName)}</text>${statusMarkup}<text x="${width - 12}" y="24" text-anchor="end" class="code-sm t3">${esc(clamp(meta, Math.floor(width / 15)))}</text>`;
 }
 
@@ -307,13 +314,31 @@ function aurora(width = W, height = 252) {
   return image(animated, 'class="motion"') + image(frames[0].data, 'class="reduced" style="display:none"');
 }
 
+// "MX" monogram traced from the source mark, in a 75x46 box.
+const MONOGRAM = { w: 75, h: 46, paths: [
+  'M0 0L20.5 15.5L35 4.5L75 46H62L33.7 16.7L20.5 26.5L10 18.6V46H0Z',
+  'M60.5 0H75L29 46H14.5Z',
+] };
+
+function nameRow(baseline) {
+  const capHeight = 40;
+  const nameWidth = 318;
+  const gap = 22;
+  const scale = capHeight / MONOGRAM.h;
+  const logoWidth = MONOGRAM.w * scale;
+  const startX = (W - (logoWidth + gap + nameWidth)) / 2;
+  const logo = `<g transform="translate(${startX.toFixed(2)} ${baseline - capHeight}) scale(${scale.toFixed(4)})" fill="${c.text1}">${MONOGRAM.paths.map((d) => `<path d="${d}"/>`).join('')}</g>`;
+  const name = `<text x="${(startX + logoWidth + gap).toFixed(2)}" y="${baseline}" textLength="${nameWidth}" lengthAdjust="spacingAndGlyphs" class="sans display t1">${esc(clamp(profile.name, 16))}</text>`;
+  return logo + name;
+}
+
 function headerSvg() {
   const H = 400;
   const sceneY = 38;
   const sceneH = 252;
-  const body = `${panelHead(W, '', `github.com/${github.username}`, 'building')}
+  const body = `${panelHead(W, '', `github.com/${github.username}`, 'cooking')}
     <g transform="translate(0 ${sceneY})">${aurora(W, sceneH)}</g><line x1="0" x2="${W}" y1="${sceneY + sceneH + .5}" y2="${sceneY + sceneH + .5}" stroke="${c.line}"/>
-    <text x="${W / 2}" y="${sceneY + sceneH + (H - sceneY - sceneH) / 2 + 20}" text-anchor="middle" class="sans display t1">${esc(clamp(profile.name, 16))}</text>`;
+    ${nameRow(sceneY + sceneH + (H - sceneY - sceneH) / 2 + 20)}`;
   return shell(W, H, `${profile.name}: ${profile.intro}`, body);
 }
 

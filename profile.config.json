@@ -1,7 +1,7 @@
 {
   "$schema": "./profile.config.schema.json",
   "github": {
-    "username": "mason50x",
+    "username": "masonxxyz",
     "featuredRepos": [],
     "moreRepos": []
   },
@@ -27,7 +27,7 @@
   },
   "profile": {
     "name": "Mason Singel",
-    "handle": "@mason50x",
+    "handle": "@masonxxyz",
     "role": "Building software that you want to use.",
     "intro": "Building software that you want to use.",
     "status": "Build things that feel inevitable",
@@ -37,7 +37,7 @@
       {
         "label": "GitHub",
         "icon": "github",
-        "url": "https://github.com/mason50x"
+        "url": "https://github.com/masonxxyz"
       },
       {
         "label": "X",

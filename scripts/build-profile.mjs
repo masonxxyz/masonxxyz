@@ -123,7 +123,7 @@ function pendingMark(x, y) {
 
 function panelHead(width, name, meta = '', status = '') {
   const safeName = clamp(name, Math.max(12, Math.floor(width / 16)));
-  const statusX = Math.min(width - 180, 28 + safeName.length * 8);
+  const statusX = safeName ? Math.min(width - 180, 28 + safeName.length * 8) : 12;
   const statusMarkup = status ? `${pendingMark(statusX, 14)}<text x="${statusX + 16}" y="24" class="label t1">${esc(status)}</text>` : '';
   return `<rect width="${width}" height="38" fill="${c.panel}"/><line x1="0" x2="${width}" y1="37.5" y2="37.5" stroke="${c.line}"/><text x="12" y="24" class="code t1">${esc(safeName)}</text>${statusMarkup}<text x="${width - 12}" y="24" text-anchor="end" class="code-sm t3">${esc(clamp(meta, Math.floor(width / 15)))}</text>`;
 }
@@ -311,7 +311,7 @@ function headerSvg() {
   const H = 400;
   const sceneY = 38;
   const sceneH = 252;
-  const body = `${panelHead(W, profile.name, `github.com/${github.username}`, 'building')}
+  const body = `${panelHead(W, '', `github.com/${github.username}`, 'building')}
     <g transform="translate(0 ${sceneY})">${aurora(W, sceneH)}</g><line x1="0" x2="${W}" y1="${sceneY + sceneH + .5}" y2="${sceneY + sceneH + .5}" stroke="${c.line}"/>
     <text x="${W / 2}" y="${sceneY + sceneH + (H - sceneY - sceneH) / 2 + 20}" text-anchor="middle" class="sans display t1">${esc(clamp(profile.name, 16))}</text>`;
   return shell(W, H, `${profile.name}: ${profile.intro}`, body);
@@ -372,12 +372,12 @@ function reposSvg(repos) {
   return shell(W, H, `More repositories by ${github.username}`, `${panelHead(W, 'more repositories', `${repos.length} selected`)}${headings}${rows}`);
 }
 
-const ICON_COLORS = { github: '#f0f6fc', x: '#ffffff', site: c.accent, email: '#1a8cff' };
+const ICON_COLORS = { github: '#f0f6fc', x: '#ffffff', site: '#f0f6fc', email: '#f0f6fc' };
 const ICONS = {
   github: (fill) => `<path fill="${fill}" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>`,
   x: (fill) => `<path fill="${fill}" d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/>`,
-  site: (fill) => `<g fill="none" stroke="${fill}" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10.6"/><ellipse cx="12" cy="12" rx="4.6" ry="10.6"/><path d="M1.6 8.2h20.8M1.6 15.8h20.8"/></g>`,
-  email: (fill) => `<g fill="none" stroke="${fill}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><rect x="1.2" y="3.6" width="21.6" height="16.8" rx="1.6"/><path d="m1.8 4.6 10.2 8.4 10.2-8.4"/></g>`,
+  site: (fill) => `<circle cx="12" cy="12" r="11.4" fill="${fill}"/><g fill="none" stroke="${c.page}" stroke-width="1.6" stroke-linecap="round"><ellipse cx="12" cy="12" rx="4.6" ry="11.4"/><path d="M12 .6v22.8M1.2 8.2h21.6M1.2 15.8h21.6"/></g>`,
+  email: (fill) => `<rect x=".6" y="3.2" width="22.8" height="17.6" rx="2.4" fill="${fill}"/><path d="m1.6 5.2 10.4 8.2 10.4-8.2" fill="none" stroke="${c.page}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>`,
 };
 
 function linkSvg(link, width = W / 4) {

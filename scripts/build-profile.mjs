@@ -314,20 +314,59 @@ function aurora(width = W, height = 252) {
   return image(animated, 'class="motion"') + image(frames[0].data, 'class="reduced" style="display:none"');
 }
 
-// "MX" monogram traced from the source mark, in a 75x46 box.
-const MONOGRAM = { w: 75, h: 46, paths: [
-  'M0 0L20.5 15.5L35 4.5L75 46H62L33.7 16.7L20.5 26.5L10 18.6V46H0Z',
-  'M60.5 0H75L29 46H14.5Z',
+// The MX mark from the portfolio (src/brandMark.ts): six strokes in a 197x119 box.
+const MARK = { w: 197, h: 119, pieces: [
+  { id: 'stem', dir: [0, -1], points: [[0, 0], [25, 18.75], [25, 119], [0, 119]] },
+  { id: 'fall', dir: [1, 1], points: [[25, 18.75], [54, 40.5], [54, 70.5], [25, 48.75]] },
+  { id: 'rise', dir: [1, -1], points: [[54, 40.5], [70.86, 27.86], [88, 45], [54, 70.5]] },
+  { id: 'sweep', dir: [1, 1], points: [[70.86, 27.86], [90.9, 12.9], [197, 119], [162, 119]] },
+  { id: 'cross', dir: [1, -1], points: [[38, 119], [74, 119], [118, 75], [100, 57]] },
+  { id: 'arm', dir: [-1, 1], points: [[161, 0], [197, 0], [142, 55], [124, 37]] },
 ] };
+
+// Ported from HeroMark.tsx: each stroke is wiped along its grain. Strokes rewind
+// last-first, pause, then redraw in construction order. Loops on a long rest.
+function markSvg(ink) {
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1]];
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1];
+  const mid = (a, b) => [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2];
+  const norm = (a) => { const l = Math.hypot(a[0], a[1]) || 1; return [a[0] / l, a[1] / l]; };
+  const path = (pts) => `M${pts.map(([x, y]) => `${x} ${y}`).join('L')}Z`;
+  const strokes = MARK.pieces.map((piece) => {
+    const [a, b, cc, d] = piece.points;
+    const first = sub(mid(cc, d), mid(a, b));
+    const second = sub(mid(d, a), mid(b, cc));
+    let axis = norm(Math.hypot(...first) > Math.hypot(...second) ? first : second);
+    if (dot(axis, piece.dir) < 0) axis = [-axis[0], -axis[1]];
+    const centroid = piece.points.reduce((acc, p) => [acc[0] + p[0] / 4, acc[1] + p[1] / 4], [0, 0]);
+    const reach = piece.points.map((p) => dot(sub(p, centroid), axis));
+    const start = Math.min(...reach);
+    return { id: piece.id, d: path(piece.points), anchor: [centroid[0] + axis[0] * start, centroid[1] + axis[1] * start], angle: Math.atan2(axis[1], axis[0]) * 180 / Math.PI, length: Math.max(...reach) - start };
+  });
+  const still = `<g fill="${ink}">${strokes.map((st) => `<path d="${st.d}"/>`).join('')}</g>`;
+  if (!motion.enabled) return still;
+  const REWIND = 170, REWIND_STAGGER = 32, PAUSE = 60, DRAW = 420, DRAW_STAGGER = 72;
+  const LEAD = 1500, PERIOD = 6500;
+  const DRAW_FROM = REWIND + REWIND_STAGGER * (strokes.length - 1) + PAUSE;
+  const n = strokes.length;
+  const animated = strokes.map((st, i) => {
+    const rw = LEAD + REWIND_STAGGER * (n - 1 - i);
+    const dr = LEAD + DRAW_FROM + DRAW_STAGGER * i;
+    const times = [0, rw, rw + REWIND, dr, dr + DRAW, PERIOD].map((ms) => (ms / PERIOD).toFixed(4));
+    const anim = `<animateTransform attributeName="transform" type="scale" values="1 1;1 1;0.001 1;0.001 1;1 1;1 1" keyTimes="${times.join(';')}" calcMode="spline" keySplines="0 0 1 1;0.55 0 0.75 0.2;0 0 1 1;0.2 0 0 1;0 0 1 1" dur="${(PERIOD / 1000 / speed).toFixed(2)}s" repeatCount="indefinite"/>`;
+    return `<clipPath id="mk-${st.id}"><path d="${st.d}"/></clipPath><g clip-path="url(#mk-${st.id})"><g transform="translate(${st.anchor[0].toFixed(3)} ${st.anchor[1].toFixed(3)}) rotate(${st.angle.toFixed(3)})"><rect x="-0.5" y="${-MARK.w}" width="${(st.length + 1).toFixed(3)}" height="${MARK.w * 2}" fill="${ink}">${anim}</rect></g></g>`;
+  }).join('');
+  return `<g class="motion">${animated}</g><g class="reduced" style="display:none">${still}</g>`;
+}
 
 function nameRow(baseline) {
   const capHeight = 40;
   const nameWidth = 318;
   const gap = 22;
-  const scale = capHeight / MONOGRAM.h;
-  const logoWidth = MONOGRAM.w * scale;
+  const scale = capHeight / MARK.h;
+  const logoWidth = MARK.w * scale;
   const startX = (W - (logoWidth + gap + nameWidth)) / 2;
-  const logo = `<g transform="translate(${startX.toFixed(2)} ${baseline - capHeight}) scale(${scale.toFixed(4)})" fill="${c.text1}">${MONOGRAM.paths.map((d) => `<path d="${d}"/>`).join('')}</g>`;
+  const logo = `<g transform="translate(${startX.toFixed(2)} ${baseline - capHeight}) scale(${scale.toFixed(4)})">${markSvg(c.text1)}</g>`;
   const name = `<text x="${(startX + logoWidth + gap).toFixed(2)}" y="${baseline}" textLength="${nameWidth}" lengthAdjust="spacingAndGlyphs" class="sans display t1">${esc(clamp(profile.name, 16))}</text>`;
   return logo + name;
 }
@@ -413,6 +452,8 @@ function linkSvg(link, width = W / 4) {
 }
 
 // Project logomarks from the portfolio site (src/components/Projects.tsx), on a 24-unit grid.
+// Glyph bounds [minX, minY, maxX, maxY] on the 24 grid (Picka includes its 0.5 stroke).
+const SITE_LOGO_BOX = { cognify: [5.6, 4, 18.4, 20], picka: [2.28, 4.22, 21.67, 19.71] };
 const SITE_LOGOS = {
   cognify: (ink) => `<path fill="${ink}" d="M5.6 4H18.4V7.2H8.8V16.8H18.4V20H5.6Z"/>`,
   picka: (ink) => `<g fill="${ink}" stroke="${ink}" stroke-width="1" stroke-linejoin="round"><path d="M9.31 4.72H14.49L15.34 5.82H8.41Z"/><path d="M7.79 8.05H16.07L17.13 9.45H6.68Z"/><path d="M6.11 11.8H17.67L19.01 13.86H4.89Z"/><path d="M4.35 16.23H19.57L21.17 19.21H2.78Z"/></g>`,
@@ -423,7 +464,8 @@ function siteSvg(site, width) {
   const pad = 26;
   const tile = 72;
   const tileY = (H - tile) / 2;
-  const textX = pad + tile + 20;
+  const slot = 64;
+  const textX = pad + slot + 22;
   const max = Math.floor((width - textX - 20) / 6.4);
   const lines = site.description.split(/\s+/).reduce((acc, word) => {
     const last = acc[acc.length - 1];
@@ -432,7 +474,12 @@ function siteSvg(site, width) {
     return acc;
   }, []).slice(0, 2);
   const logo = SITE_LOGOS[site.logo];
-  const mark = logo ? `<rect x="${pad + .5}" y="${tileY + .5}" width="${tile - 1}" height="${tile - 1}" fill="${c.well}" stroke="${c.line}"/><g transform="translate(${pad + tile * .2} ${tileY + tile * .2}) scale(${(tile * .6 / 24).toFixed(4)})">${logo(c.text1)}</g>` : '';
+  // Glyph spans the text block: title cap top to last description baseline.
+  const top = tileY + 5;
+  const bottom = tileY + 48 + (lines.length - 1) * 20;
+  const box = SITE_LOGO_BOX[site.logo];
+  const k = box ? (bottom - top) / (box[3] - box[1]) : 1;
+  const mark = logo ? `<g transform="translate(${(pad + (slot - (box[2] - box[0]) * k) / 2 - box[0] * k).toFixed(2)} ${(top - box[1] * k).toFixed(2)}) scale(${k.toFixed(4)})">${logo(c.text1)}</g>` : '';
   const body = `<rect width="${width}" height="${H}" fill="${c.panel}"/>${mark}
     <text x="${textX}" y="${tileY + 22}" class="sans title t1">${esc(site.name)}</text>
     ${lines.map((line, i) => `<text x="${textX}" y="${tileY + 48 + i * 20}" class="sans body t2">${esc(line)}</text>`).join('')}`;

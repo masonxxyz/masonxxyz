@@ -5,6 +5,6 @@
     .body{font-size:14px}.code{font-size:13px}.code-sm{font-size:12px}.label{font-size:12px;letter-spacing:.06em;text-transform:uppercase}.micro{font-size:11px;letter-spacing:.06em;text-transform:uppercase}
     .title{font-size:24px;letter-spacing:-.025em}.display{font-size:56px;letter-spacing:-.04em}
     @media(prefers-reduced-motion:reduce){.motion{display:none!important}.reduced{display:block!important}}
-  </style><rect width="440" height="124" fill="#181818"/><rect width="440" height="124" fill="#202020"/><rect x="26.5" y="26.5" width="71" height="71" fill="#262626" stroke="#343434"/><g transform="translate(40.4 40.4) scale(1.8000)"><path fill="#f2f2f2" d="M5.6 4H18.4V7.2H8.8V16.8H18.4V20H5.6Z"/></g>
-    <text x="118" y="48" class="sans title t1">Cognify</text>
-    <text x="118" y="74" class="sans body t2">Website design, hosting, and monitoring. A</text><text x="118" y="94" class="sans body t2">modern rebuild we run for you.</text><rect x=".5" y=".5" width="439" height="123" fill="none" stroke="#343434"/></svg>
+  </style><rect width="440" height="124" fill="#181818"/><rect width="440" height="124" fill="#202020"/><g transform="translate(10.75 15.25) scale(3.9375)"><path fill="#f2f2f2" d="M5.6 4H18.4V7.2H8.8V16.8H18.4V20H5.6Z"/></g>
+    <text x="112" y="48" class="sans title t1">Cognify</text>
+    <text x="112" y="74" class="sans body t2">Website design, hosting, and monitoring. A</text><text x="112" y="94" class="sans body t2">modern rebuild we run for you.</text><rect x=".5" y=".5" width="439" height="123" fill="none" stroke="#343434"/></svg>

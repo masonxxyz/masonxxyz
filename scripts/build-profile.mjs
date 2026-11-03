@@ -372,8 +372,19 @@ function reposSvg(repos) {
   return shell(W, H, `More repositories by ${github.username}`, `${panelHead(W, 'more repositories', `${repos.length} selected`)}${headings}${rows}`);
 }
 
-function linkSvg(label, width = W / 4) {
-  return shell(width, 68, label, `<text x="12" y="41" class="label t1">${esc(label)} ↗</text>`);
+const ICON_COLORS = { github: '#f0f6fc', x: '#ffffff', site: c.accent, email: '#1a8cff' };
+const ICONS = {
+  github: (fill) => `<path fill="${fill}" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>`,
+  x: (fill) => `<path fill="${fill}" d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/>`,
+  site: (fill) => `<g fill="none" stroke="${fill}" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10.6"/><ellipse cx="12" cy="12" rx="4.6" ry="10.6"/><path d="M1.6 8.2h20.8M1.6 15.8h20.8"/></g>`,
+  email: (fill) => `<g fill="none" stroke="${fill}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><rect x="1.2" y="3.6" width="21.6" height="16.8" rx="1.6"/><path d="m1.8 4.6 10.2 8.4 10.2-8.4"/></g>`,
+};
+
+function linkSvg(link, width = W / 4) {
+  const H = 112;
+  const size = 44;
+  if (!ICONS[link.icon]) return shell(width, 68, link.label, `<text x="12" y="41" class="label t1">${esc(link.label)} ↗</text>`);
+  return shell(width, H, link.label, `<g transform="translate(${(width - size) / 2} ${(H - size) / 2}) scale(${size / 24})">${ICONS[link.icon](ICON_COLORS[link.icon])}</g>`);
 }
 
 function readme(featured, more, links) {
@@ -437,6 +448,6 @@ const links = profile.links.slice(0, 6);
 await writeFile(path.join(OUT, 'header.svg'), headerSvg());
 await Promise.all(featured.map((repo, index) => writeFile(path.join(OUT, `project-${String(index + 1).padStart(2, '0')}.svg`), projectSvg(repo))));
 if (more.length) await writeFile(path.join(OUT, 'repos.svg'), reposSvg(more));
-await Promise.all(links.map((link, index) => writeFile(path.join(OUT, `link-${String(index + 1).padStart(2, '0')}.svg`), linkSvg(link.label, W / links.length))));
+await Promise.all(links.map((link, index) => writeFile(path.join(OUT, `link-${String(index + 1).padStart(2, '0')}.svg`), linkSvg(link, W / links.length))));
 await writeFile(path.join(ROOT, 'README.md'), readme(featured, more, links));
 console.log(`Built Sodium profile for @${github.username}: ${featured.length} featured + ${more.length} more repositories.`);

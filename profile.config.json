@@ -21,20 +21,24 @@
     "state": "active",
     "links": [
       {
-        "label": "github",
+        "label": "GitHub",
+        "icon": "github",
         "url": "https://github.com/mason50x"
       },
       {
-        "label": "site",
+        "label": "X",
+        "icon": "x",
+        "url": "https://x.com/masonxxyz"
+      },
+      {
+        "label": "Site",
+        "icon": "site",
         "url": "https://masonsingel.xyz"
       },
       {
-        "label": "x",
-        "url": "https://x.com/pickadotcollege"
-      },
-      {
-        "label": "repos",
-        "url": "https://github.com/mason50x?tab=repositories"
+        "label": "Email",
+        "icon": "email",
+        "url": "mailto:mason@cognify.design"
       }
     ]
   },

@@ -67,6 +67,7 @@
             "required": ["label", "url"],
             "properties": {
               "label": { "type": "string" },
+              "icon": { "enum": ["github", "x", "site", "email"] },
               "url": { "type": "string", "format": "uri" }
             }
           }

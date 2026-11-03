@@ -10,7 +10,7 @@ if (missing.length) throw new Error(`Missing theme colors: ${missing.join(', ')}
 if (!Array.isArray(config.theme?.auroraPalette) || config.theme.auroraPalette.length < 2) throw new Error('theme.auroraPalette needs at least two colors');
 if (!config.github?.username) throw new Error('github.username is required');
 if (!Array.isArray(config.profile?.links) || config.profile.links.length < 1 || config.profile.links.length > 6) throw new Error('profile.links must contain between one and six links');
-if (!Array.isArray(config.github.featuredRepos) || !config.github.featuredRepos.length) throw new Error('Choose at least one github.featuredRepos entry');
+if (!Array.isArray(config.github.featuredRepos)) throw new Error('github.featuredRepos must be an array');
 const featuredKeys = config.github.featuredRepos.map((entry) => typeof entry === 'string' ? entry : entry?.repo);
 if (featuredKeys.some((key) => !key)) throw new Error('Every github.featuredRepos entry needs a repo');
 if (new Set(featuredKeys).size !== featuredKeys.length) throw new Error('github.featuredRepos contains duplicates');

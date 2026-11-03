@@ -2,36 +2,8 @@
   "$schema": "./profile.config.schema.json",
   "github": {
     "username": "mason50x",
-    "featuredRepos": [
-      {
-        "repo": "mason50x/murmur",
-        "solidButton": true,
-        "ctaLabel": "View source",
-        "ctaArrow": null,
-        "showRepoPath": false,
-        "projectUrl": "",
-        "showBanner": true,
-        "autoOgImage": true,
-        "ogSourceUrl": "",
-        "bannerUrl": ""
-      },
-      {
-        "repo": "mason50x/whirl",
-        "solidButton": true,
-        "ctaLabel": "View source",
-        "ctaArrow": null,
-        "showRepoPath": false,
-        "projectUrl": "",
-        "showBanner": true,
-        "autoOgImage": true,
-        "ogSourceUrl": "",
-        "bannerUrl": ""
-      }
-    ],
-    "moreRepos": [
-      "murmur",
-      "whirl"
-    ]
+    "featuredRepos": [],
+    "moreRepos": []
   },
   "projects": {
     "bannersEnabled": true,
@@ -75,20 +47,20 @@
     "text3": "#999999",
     "line": "#343434",
     "lineFaint": "#292929",
-    "accent": "#ffd400",
-    "accentText": "#ffd400",
-    "selected": "#3a3107",
+    "accent": "#88acad",
+    "accentText": "#88acad",
+    "selected": "#1f3540",
     "ok": "#c7c7c7",
     "warn": "#b0b0b0",
     "fail": "#e0e0e0",
     "languageFallback": "#999999",
     "auroraPalette": [
-      "#121212",
-      "#343434",
-      "#5a5a5a",
-      "#786700",
-      "#c9a900",
-      "#ffd400"
+      "#0d1117",
+      "#33505f",
+      "#466672",
+      "#5b7e87",
+      "#7b9fa2",
+      "#88acad"
     ]
   },
   "motion": {

@@ -412,19 +412,30 @@ function linkSvg(link, width = W / 4) {
   return shell(width, H, link.label, `<g transform="translate(${(width - size) / 2} ${(H - size) / 2}) scale(${size / 24})">${ICONS[link.icon](ICON_COLORS[link.icon])}</g>`);
 }
 
+// Project logomarks from the portfolio site (src/components/Projects.tsx), on a 24-unit grid.
+const SITE_LOGOS = {
+  cognify: (ink) => `<path fill="${ink}" d="M5.6 4H18.4V7.2H8.8V16.8H18.4V20H5.6Z"/>`,
+  picka: (ink) => `<g fill="${ink}" stroke="${ink}" stroke-width="1" stroke-linejoin="round"><path d="M9.31 4.72H14.49L15.34 5.82H8.41Z"/><path d="M7.79 8.05H16.07L17.13 9.45H6.68Z"/><path d="M6.11 11.8H17.67L19.01 13.86H4.89Z"/><path d="M4.35 16.23H19.57L21.17 19.21H2.78Z"/></g>`,
+};
+
 function siteSvg(site, width) {
-  const H = 150;
-  const domain = new URL(site.url).host;
-  const max = Math.floor((width - 52) / 6.4);
+  const H = 124;
+  const pad = 26;
+  const tile = 72;
+  const tileY = (H - tile) / 2;
+  const textX = pad + tile + 20;
+  const max = Math.floor((width - textX - 20) / 6.4);
   const lines = site.description.split(/\s+/).reduce((acc, word) => {
     const last = acc[acc.length - 1];
     if (last && `${last} ${word}`.length <= max) acc[acc.length - 1] = `${last} ${word}`;
     else acc.push(word);
     return acc;
   }, []).slice(0, 2);
-  const body = `${panelHead(width, site.name.toLowerCase(), `${domain} ↗`)}
-    <text x="26" y="84" class="sans title t1">${esc(site.name)}</text>
-    ${lines.map((line, i) => `<text x="26" y="${112 + i * 20}" class="sans body t2">${esc(line)}</text>`).join('')}`;
+  const logo = SITE_LOGOS[site.logo];
+  const mark = logo ? `<rect x="${pad + .5}" y="${tileY + .5}" width="${tile - 1}" height="${tile - 1}" fill="${c.well}" stroke="${c.line}"/><g transform="translate(${pad + tile * .2} ${tileY + tile * .2}) scale(${(tile * .6 / 24).toFixed(4)})">${logo(c.text1)}</g>` : '';
+  const body = `<rect width="${width}" height="${H}" fill="${c.panel}"/>${mark}
+    <text x="${textX}" y="${tileY + 22}" class="sans title t1">${esc(site.name)}</text>
+    ${lines.map((line, i) => `<text x="${textX}" y="${tileY + 48 + i * 20}" class="sans body t2">${esc(line)}</text>`).join('')}`;
   return shell(width, H, `${site.name}: ${site.description}`, body);
 }
 

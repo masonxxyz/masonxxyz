@@ -9,12 +9,14 @@
     {
       "name": "Picka",
       "url": "https://picka.college",
-      "description": "Find colleges that fit and see the real net price for your family. Free and independent."
+      "description": "Find colleges that fit and see the real net price for your family. Free and independent.",
+      "logo": "picka"
     },
     {
       "name": "Cognify",
       "url": "https://cognify.design",
-      "description": "Website design, hosting, and monitoring. A modern rebuild on infrastructure we run for you."
+      "description": "Website design, hosting, and monitoring. A modern rebuild we run for you.",
+      "logo": "cognify"
     }
   ],
   "projects": {

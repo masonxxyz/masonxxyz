@@ -13,7 +13,8 @@
         "properties": {
           "name": { "type": "string" },
           "url": { "type": "string", "format": "uri" },
-          "description": { "type": "string" }
+          "description": { "type": "string" },
+          "logo": { "enum": ["picka", "cognify"] }
         }
       }
     },

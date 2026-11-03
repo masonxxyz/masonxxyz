@@ -480,7 +480,7 @@ function siteSvg(site, width) {
   const box = SITE_LOGO_BOX[site.logo];
   const k = box ? (bottom - top) / (box[3] - box[1]) : 1;
   const mark = logo ? `<g transform="translate(${(pad + (slot - (box[2] - box[0]) * k) / 2 - box[0] * k).toFixed(2)} ${(top - box[1] * k).toFixed(2)}) scale(${k.toFixed(4)})">${logo(c.text1)}</g>` : '';
-  const body = `<rect width="${width}" height="${H}" fill="${c.panel}"/>${mark}
+  const body = `${mark}
     <text x="${textX}" y="${tileY + 22}" class="sans title t1">${esc(site.name)}</text>
     ${lines.map((line, i) => `<text x="${textX}" y="${tileY + 48 + i * 20}" class="sans body t2">${esc(line)}</text>`).join('')}`;
   return shell(width, H, `${site.name}: ${site.description}`, body);

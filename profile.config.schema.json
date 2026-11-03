@@ -4,6 +4,19 @@
   "type": "object",
   "required": ["github", "projects", "profile", "theme", "motion", "effects", "layout"],
   "properties": {
+    "sites": {
+      "type": "array",
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "required": ["name", "url", "description"],
+        "properties": {
+          "name": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "description": { "type": "string" }
+        }
+      }
+    },
     "github": {
       "type": "object",
       "required": ["username", "featuredRepos", "moreRepos"],

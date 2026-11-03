@@ -5,6 +5,18 @@
     "featuredRepos": [],
     "moreRepos": []
   },
+  "sites": [
+    {
+      "name": "Picka",
+      "url": "https://picka.college",
+      "description": "Find colleges that fit and see the real net price for your family. Free and independent."
+    },
+    {
+      "name": "Cognify",
+      "url": "https://cognify.design",
+      "description": "Website design, hosting, and monitoring. A modern rebuild on infrastructure we run for you."
+    }
+  ],
   "projects": {
     "bannersEnabled": true,
     "autoOgImages": true,

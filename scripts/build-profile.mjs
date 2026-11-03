@@ -308,22 +308,12 @@ function aurora(width = W, height = 252) {
 }
 
 function headerSvg() {
-  const H = 490;
+  const H = 400;
   const sceneY = 38;
   const sceneH = 252;
-  const split = 535;
-  const user = data.user;
   const body = `${panelHead(W, profile.name, `github.com/${github.username}`, 'building')}
     <g transform="translate(0 ${sceneY})">${aurora(W, sceneH)}</g><line x1="0" x2="${W}" y1="${sceneY + sceneH + .5}" y2="${sceneY + sceneH + .5}" stroke="${c.line}"/>
-    <line x1="${split + .5}" x2="${split + .5}" y1="${sceneY + sceneH}" y2="${H}" stroke="${c.line}"/>
-    <text x="26" y="354" class="sans display t1">${esc(clamp(profile.name, 16))}</text>
-    <text x="26" y="381" class="sans body t2">${esc(clamp(profile.intro, 68))}</text>
-    <text x="26" y="424" class="micro t3">Now</text><text x="86" y="424" class="code t1">${esc(clamp(profile.status, 52))}</text>
-    <text x="26" y="452" class="micro t3">Handle</text><text x="86" y="452" class="code t1">${esc(clamp(profile.handle, 28))}</text>
-    ${statCell(split, sceneY + sceneH, 172, 100, 'Repositories', compact(user.public_repos))}
-    ${statCell(split + 172, sceneY + sceneH, W - split - 172, 100, 'Followers', compact(user.followers), true)}
-    ${statCell(split, sceneY + sceneH + 100, 172, H - sceneY - sceneH - 100, 'Status', profile.state, false, 'ok')}
-    ${statCell(split + 172, sceneY + sceneH + 100, W - split - 172, H - sceneY - sceneH - 100, 'Focus', profile.focus, true)}`;
+    <text x="${W / 2}" y="${sceneY + sceneH + (H - sceneY - sceneH) / 2 + 20}" text-anchor="middle" class="sans display t1">${esc(clamp(profile.name, 16))}</text>`;
   return shell(W, H, `${profile.name}: ${profile.intro}`, body);
 }
 
